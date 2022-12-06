@@ -3,11 +3,34 @@ var server = require('http').createServer(app);
 // http server를 socket.io server로 upgrade한다
 var io = require('socket.io')(server);
 
+var info = {
+  data:'hello',
+  newinfo:0
+};
+
 // localhost:3000으로 서버에 접속하면 클라이언트로 index.html을 전송한다
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/submit', function(req, res) {
+  //res.sendFile(__dirname + '/index.html');
+  //await Promise();
+  res.send(info.data);
+});
+/*
+function Promise(data) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      //console.log("fooPromise");
+      if(data === 1000)
+        reject(new Error("my error"));
+      else
+        resolve(data);
+    }, data);
+  })
+}
+*/
 // connection event handler
 // connection이 수립되면 event handler function의 인자로 socket인 들어온다
 io.on('connection', function(socket) {
