@@ -4,6 +4,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 var info = {
+  name:'notyet',
   data:'hello',
   newinfo:0
 };
@@ -13,24 +14,28 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/submit', function(req, res) {
+app.get('/submit', async function(req, res) {
   //res.sendFile(__dirname + '/index.html');
-  //await Promise();
-  res.send(info.data);
+  let go = await Pp(info);
+  console.log(go);
+  res.json(go);  
 });
-/*
-function Promise(data) {
+
+function Pp(data) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       //console.log("fooPromise");
-      if(data === 1000)
-        reject(new Error("my error"));
-      else
+      if(data.newinfo==1){
+        data.newinfo=0;
         resolve(data);
-    }, data);
+      }
+      else{
+        resolve('nope');
+      }
+    }, 1000);
   })
 }
-*/
+
 // connection event handler
 // connection이 수립되면 event handler function의 인자로 socket인 들어온다
 io.on('connection', function(socket) {
@@ -50,6 +55,9 @@ io.on('connection', function(socket) {
   // 클라이언트로부터의 메시지가 수신되면
   socket.on('chat', function(data) {
     console.log('Message from %s: %s', socket.name, data.msg);
+    info.name = socket.name;
+    info.data = data.msg;
+    info.newinfo = 1;
 
     var msg = {
       from: {
